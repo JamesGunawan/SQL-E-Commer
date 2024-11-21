@@ -1,20 +1,20 @@
-### Activity: Creating an E-commerce Database Schema in MySQL
+-- ### Activity: Creating an E-commerce Database Schema in MySQL
 
-# In this activity, you will design a basic database schema for an e-commerce store. 
-# This database will track customers, products, and orders. 
+-- # In this activity, you will design a basic database schema for an e-commerce store. 
+-- # This database will track customers, products, and orders. 
 
-# Follow the steps below to create each table and establish relationships between them.
+-- # Follow the steps below to create each table and establish relationships between them.
 
 -- #### Reflection
 -- - How do the tables work together to create a full picture of customers and orders?
 -- - Why are foreign keys essential in linking different tables in a relational database?
 -- - What challenges did you face in designing this schema?
 
-#1 tables work together by forming a "relationship" with other tables to create a full display of information
-#2 foreign keys are essential because not all tables need to live in the same table, i'm assuming that if only one table is created it will be a clutter of mess. that's why we create tables that use foreign tables so sub-tables can temporarily access the data of the main table and pair up
+-- #1 tables work together by forming a "relationship" with other tables to create a full display of information
+-- #2 foreign keys are essential because not all tables need to live in the same table, i'm assuming that if only one table is created it will be a clutter of mess. that's why we create tables that use foreign tables so sub-tables can temporarily access the data of the main table and pair up
 
 
-#### Instructions
+-- #### Instructions
 
 -- 1. **Set up a new Database for the E-commerce Store**
 --    - Create a new database for the e-commerce store.
@@ -61,118 +61,124 @@
 --    - How might you add a "category" column for products to categorize items in the store?
 --    - How would you track shipment dates for orders and delivery addresses if customers have multiple addresses?
 
+-- Create a database for e-commerce management
+CREATE DATABASE e_commerce;
 
--- CREATE TABLE customers (
---     customer_id INT AUTO_INCREMENT PRIMARY KEY,
---     first_name VARCHAR(20),
---     last_name VARCHAR(20),
---     email VARCHAR(50) UNIQUE,
---     phone VARCHAR(15), 
---     address VARCHAR(40),
---     city VARCHAR(20),
---     state VARCHAR(20),
---     zip INT,
---     regis_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
+-- Create the 'customers' table to store customer details.
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY, -- Unique id for each customer that auto-increments
+    first_name VARCHAR(20),
+    last_name VARCHAR(20),
+    email VARCHAR(50) UNIQUE, -- Email address must be unique meaning no duplicate emails
+    phone VARCHAR(15), 
+    address VARCHAR(40),
+    city VARCHAR(20),
+    state VARCHAR(20),
+    zip INT,
+    regis_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp for when the customer registered 
+);
 
+-- Create the 'products' table to store product details.
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY, -- Unique id for each product that auto-increments
+    name VARCHAR(20),
+    description VARCHAR(100),
+    price DECIMAL(10, 2), -- Price with two decimal places
+    stock INT,
+    regis_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestand for when the product was registered
+);
 
--- CREATE TABLE products (
---     product_id INT AUTO_INCREMENT PRIMARY KEY,
---     name VARCHAR(20),
---     description VARCHAR(100),
---     price DECIMAL(10, 2),
---     stock INT,
---     regis_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
+-- Create the 'orders' table to store order details.
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY, -- Unique id for each order that auto-increments
+    customer_id INT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp for when the order was placed
+    order_status ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled') DEFAULT 'Pending', -- status of the order
+    total_amount DECIMAL(10, 2),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) -- Link to the customer who made the order
+);
 
+-- Create the 'order_items' table to store product details for each order.
+CREATE TABLE order_items (
+    order_detail_id INT AUTO_INCREMENT PRIMARY KEY, -- Unique id for each order item that auto-increments
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price_per_product DECIMAL(10, 2), -- Price with two decimal places
+    FOREIGN KEY (order_id) REFERENCES orders(order_id), -- Link to the order in the orders table
+    FOREIGN KEY (product_id) REFERENCES products(product_id) -- Link to the product in the products table
+);
 
--- CREATE TABLE orders (
---     order_id INT AUTO_INCREMENT PRIMARY KEY,
---     customer_id INT,
---     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     order_status ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled') DEFAULT 'Pending',
---     total_amount DECIMAL(10, 2),
---     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
--- );
-
-
--- CREATE TABLE order_details (
---     order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
---     order_id INT,
---     product_id INT,
---     quantity INT,
---     price_per_product DECIMAL(10, 2),
---     FOREIGN KEY (order_id) REFERENCES orders(order_id),
---     FOREIGN KEY (product_id) REFERENCES products(product_id)
--- );
+-- Sample data into the 'customers' table.
+-- Each entry represents a customer with their contact details and address.
 
 -- INSERT INTO customers (first_name, last_name, email, phone, address, city, state, zip)
--- VALUES
--- ('John', 'Doe', 'johndoe@example.com', '1234567890', '123 Maple St', 'Springfield', 'IL', 62701),
--- ('Jane', 'Smith', 'janesmith@example.com', '2345678901', '456 Oak Ave', 'Lincoln', 'NE', 68501),
--- ('Mike', 'Brown', 'mikebrown@example.com', '3456789012', '789 Pine Rd', 'Madison', 'WI', 53703),
--- ('Emma', 'Davis', 'emmadavis@example.com', '4567890123', '101 Elm St', 'Orlando', 'FL', 32801),
--- ('Liam', 'Wilson', 'liamwilson@example.com', '5678901234', '202 Birch Blvd', 'Austin', 'TX', 73301),
--- ('Olivia', 'Taylor', 'oliviataylor@example.com', '6789012345', '303 Cedar Cir', 'Phoenix', 'AZ', 85001),
--- ('Noah', 'Anderson', 'noahanderson@example.com', '7890123456', '404 Spruce Dr', 'Denver', 'CO', 80201),
--- ('Ava', 'Thomas', 'avathomas@example.com', '8901234567', '505 Redwood Ln', 'Seattle', 'WA', 98101),
--- ('Ethan', 'Jackson', 'ethanjackson@example.com', '9012345678', '606 Magnolia Ct', 'Atlanta', 'GA', 30301),
--- ('Sophia', 'White', 'sophiawhite@example.com', '0123456789', '707 Chestnut Pl', 'New York', 'NY', 10001);
+-- VALUES 
+--     ('John', 'Doe', 'johndoe@example.com', '123-456-7890', '123 Elm St', 'Springfield', 'IL', 62701),
+--     ('Jane', 'Smith', 'janesmith@example.com', '234-567-8901', '456 Oak St', 'Chicago', 'IL', 60601),
+--     ('Alice', 'Johnson', 'alice.johnson@example.com', '345-678-9012', '789 Pine St', 'Peoria', 'IL', 61602),
+--     ('Bob', 'Brown', 'bobbrown@example.com', '456-789-0123', '101 Maple St', 'Champaign', 'IL', 61820),
+--     ('Charlie', 'Davis', 'charlie.davis@example.com', '567-890-1234', '202 Birch St', 'Decatur', 'IL', 62521);
 
+-- Insert sample data into the 'products' table.
+-- Each entry represents a product with its name, description, price, and stock quantity.
 -- INSERT INTO products (name, description, price, stock)
 -- VALUES
--- ('Laptop', '15-inch screen, 8GB RAM, 256GB SSD', 599.99, 20),
--- ('Smartphone', '6.5-inch display, 128GB storage', 399.99, 50),
--- ('Headphones', 'Noise-cancelling, wireless', 79.99, 100),
--- ('Smartwatch', 'Water-resistant, heart rate monitor', 149.99, 30),
--- ('Tablet', '10-inch screen, 64GB storage', 199.99, 40),
--- ('Camera', '24MP DSLR, 18-55mm lens', 499.99, 15),
--- ('Printer', 'Wireless, color printing', 129.99, 25),
--- ('Monitor', '27-inch 4K UHD', 299.99, 35),
--- ('Keyboard', 'Mechanical, RGB lighting', 49.99, 80),
--- ('Mouse', 'Wireless, ergonomic design', 29.99, 120);
+--     ('Laptop', 'High performance laptop with 16GB RAM and 512GB SSD', 1200.00, 50),
+--     ('Smartphone', 'Latest model with 128GB storage and 5G support', 799.99, 100),
+--     ('Headphones', 'Noise-cancelling over-ear headphones', 150.00, 150),
+--     ('Tablet', '10-inch tablet with stylus support', 299.99, 30),
+--     ('Monitor', '27-inch 4K resolution monitor', 350.00, 20);
 
--- INSERT INTO orders (customer_id, order_status, total_amount)
+-- Insert sample data into the 'orders' table.
+-- Each entry represents an order placed by a customer, including the order status and total amount.
+-- INSERT INTO orders (customer_id, order_date, order_status, total_amount)
 -- VALUES
--- (1, 'Shipped', 679.98),
--- (2, 'Delivered', 399.99),
--- (3, 'Pending', 149.99),
--- (4, 'Cancelled', 0.00),
--- (5, 'Shipped', 749.98),
--- (6, 'Delivered', 299.99),
--- (7, 'Pending', 499.99),
--- (8, 'Shipped', 579.98),
--- (9, 'Delivered', 79.99),
--- (10, 'Pending', 99.98);
+--     (1, '2024-11-20 14:30:00', 'Pending', 1300.00),
+--     (2, '2024-11-21 09:00:00', 'Shipped', 799.99),
+--     (3, '2024-11-22 16:00:00', 'Delivered', 450.00),
+--     (4, '2024-11-23 10:15:00', 'Pending', 299.99),
+--     (5, '2024-11-24 18:30:00', 'Cancelled', 0.00);
 
--- INSERT INTO order_details (order_id, product_id, quantity, price_per_product)
+-- Insert sample data into the 'order_items' table.
+-- Each entry links a product with an order, specifying the quantity and price at the time of purchase.
+-- INSERT INTO order_items (order_id, product_id, quantity, price_per_product)
 -- VALUES
--- (1, 1, 1, 599.99),
--- (1, 3, 1, 79.99),
--- (2, 2, 1, 399.99),
--- (3, 4, 1, 149.99),
--- (5, 1, 1, 599.99),
--- (5, 5, 1, 149.99),
--- (6, 8, 1, 299.99),
--- (7, 6, 1, 499.99),
--- (8, 1, 1, 599.99),
--- (8, 10, 1, 29.99);
+--     (1, 1, 1, 1200.00), -- Laptop for John Doe
+--     (2, 2, 1, 799.99), -- Smartphone for Jane Smith
+--     (3, 3, 2, 150.00), -- Headphones for Alice Johnson
+--     (3, 4, 1, 299.99), -- Tablet for Alice Johnson
+--     (4, 4, 1, 299.99); -- Tablet for Bob Brown
 
-SELECT order_id, order_date
-FROM orders
-WHERE customer_id = 1;
-
-SELECT p.name AS product_name, od.quantity, od.price_per_product
-FROM order_details od
-JOIN products p ON od.product_id = p.product_id
-WHERE od.order_id = 1;
-
-UPDATE products p
-JOIN order_details od ON p.product_id = od.product_id
-SET p.stock = p.stock - od.quantity
-WHERE od.order_id = 1;
-
-
-
-
-
+-- Query to retrieve customer details along with their order information.
+SELECT
+    customers.customer_id, 
+    customers.first_name, 
+    customers.last_name, 
+    customers.email, 
+    customers.phone, 
+    customers.address,
+    customers.city,
+    customers.zip,
+    orders.order_date,
+    orders.order_status,
+    orders.total_amount
+FROM customers
+INNER JOIN orders ON orders.customer_id = customers.customer_id;
+    
+-- Query to retrieve details about the products in each order.
+SELECT 
+    order_items.order_detail_id,
+    orders.order_id,
+    orders.order_date,
+    orders.order_status,
+    products.name,
+    order_items.quantity,
+    order_items.price_per_product,
+    (order_items.quantity * order_items.price_per_product) AS total_price
+FROM 
+    order_items
+JOIN 
+    orders ON order_items.order_id = orders.order_id
+JOIN 
+    products ON order_items.product_id = products.product_id;
